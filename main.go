@@ -21,8 +21,7 @@ func main() {
 	branch := input("\n")
 	branch = strings.ReplaceAll(strings.Trim(branch, " "), " ", "-")
 
-	bs, err := exec.Command("git", "status", "-s").Output()
-	assertNil(err)
+	bs := Check("git", "status", "-s")
 	status := formatStatus(bs)
 	var commit_once = false
 	var cmessage string
@@ -31,11 +30,8 @@ func main() {
 		output("Modified files:")
 		output(status)
 		br()
-		output("input commit message; input q to quit")
+		output("input commit message")
 		cmessage = input("\n")
-		if strings.Trim(cmessage, " \n") == "q" {
-			os.Exit(1)
-		}
 		commit_once = true
 	}
 
@@ -95,19 +91,24 @@ func output(a ...any) {
 func br() {
 	fmt.Println()
 }
-func Run(command string, args ...string) error {
+func Run(command string, args ...string) {
 	if dry_run {
 		fmt.Println("executing", command, strings.Join(args, " "))
-		return nil
+		return
 	}
 	err := exec.Command(command, args...).Run()
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Check() also runs on dry_run. do NOT put commands that mutate the environment.
-func Check(command string, args ...string) (string, error) {
+func Check(command string, args ...string) string {
 	b, err := exec.Command(command, args...).Output()
-	return string(b), err
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(b)
 }
 
 // prints prefix, and waits for the user to input.
@@ -148,8 +149,8 @@ func assertNil(err error) {
 	}
 }
 
-func formatStatus(b []byte) string {
-	return strings.Trim(string(b), "\n")
+func formatStatus(s string) string {
+	return strings.Trim(s, "\n")
 }
 func oneLine(s string) string {
 	return strings.ReplaceAll(s, "\n", " ")
