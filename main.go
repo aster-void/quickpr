@@ -110,7 +110,7 @@ func Run(command string, args ...string) {
 	err := exec.Command(command, args...).Run()
 	if err != nil {
 		// apparentally some gh commands fail on success
-		debug("Command", command, "Failed.")
+		debug("Command", command, strings.Join(args, " "), "Failed.")
 		debug(err)
 	}
 }
