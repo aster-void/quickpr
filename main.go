@@ -66,10 +66,10 @@ func main() {
 	// execute stuff
 	Run("git", "switch", "-c", branch)
 	if commit_once {
-		Run("git", "add", "-a")
+		Run("git", "add", "-A")
 		Run("git", "commit", "-m", cmessage)
 	}
-	Run("git", "push", "--set-upstream", "origin", branch)
+	Run("git", "push", "--set-upstream", "origin", "HEAD")
 	Run("gh", args...)
 	Run("git", "switch", "-c", base_branch)
 }
