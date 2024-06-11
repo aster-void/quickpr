@@ -61,7 +61,7 @@ func main() {
 		skip_browser_check = true
 	}
 
-	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", title, "--body", desc}
+	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", "\"" + title + "\"", "--body", "\"" + desc + "\""}
 	if desc == "" {
 		args = append(args, "\"\"")
 	}
