@@ -82,7 +82,7 @@ func main() {
 	}
 	Run("git", "push", "--set-upstream", "origin", "HEAD")
 	Run("gh", args...)
-	Run("git", "switch", "-c", base_branch)
+	Run("git", "switch", base_branch)
 }
 
 func verbose(s string) {
