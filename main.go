@@ -16,10 +16,16 @@ var dry_run = false
 var base_branch = "main"
 
 func main() {
-	// give the branch a name
-	output("Name the branch: spaces will be replaced with -")
-	branch := input("\n")
-	branch = strings.ReplaceAll(strings.Trim(branch, " "), " ", "-")
+	var switch_branch = false
+	var branch string
+	current_branch := Check("git", "branch", "--show-current")
+	if current_branch == base_branch {
+		// give the branch a name
+		output("Name the branch: spaces will be replaced with -")
+		branch = input("\n")
+		branch = strings.ReplaceAll(strings.Trim(branch, " "), " ", "-")
+		switch_branch = true
+	}
 
 	bs := Check("git", "status", "-s")
 	status := formatStatus(bs)
@@ -64,7 +70,9 @@ func main() {
 	}
 
 	// execute stuff
-	Run("git", "switch", "-c", branch)
+	if switch_branch {
+		Run("git", "switch", "-c", branch)
+	}
 	if commit_once {
 		Run("git", "add", "-A")
 		Run("git", "commit", "-m", cmessage)
@@ -108,7 +116,7 @@ func Check(command string, args ...string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return string(b)
+	return strings.Trim(string(b), "\n")
 }
 
 // prints prefix, and waits for the user to input.
