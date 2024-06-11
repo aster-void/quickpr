@@ -38,6 +38,9 @@ func main() {
 		br()
 		output("input commit message")
 		cmessage = input("\n")
+		if cmessage == "" {
+			log.Fatal("Empty commit message not allowed")
+		}
 		commit_once = true
 	}
 
@@ -62,9 +65,6 @@ func main() {
 	}
 
 	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", "\"" + title + "\"", "--body", "\"" + desc + "\""}
-	if desc == "" {
-		args = append(args, "\"\"")
-	}
 	if autofill {
 		args = append(args, "--fill")
 	}
