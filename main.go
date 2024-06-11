@@ -1,0 +1,166 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"strings"
+)
+
+var explain_verbose = true
+var debug_mode = true
+var desc_delim = "END\n"
+var dry_run = false
+var base_branch = "main"
+
+func main() {
+	// give the branch a name
+	output("Name the branch: spaces will be replaced with -")
+	branch := input("\n")
+	branch = strings.ReplaceAll(strings.Trim(branch, " "), " ", "-")
+
+	bs, err := exec.Command("git", "status", "-s").Output()
+	assertNil(err)
+	status := formatStatus(bs)
+	var commit_once = false
+	var cmessage string
+	if status != "" {
+		br()
+		output("Modified files:")
+		output(status)
+		br()
+		output("input commit message; input q to quit")
+		cmessage = input("\n")
+		if strings.Trim(cmessage, " \n") == "q" {
+			os.Exit(1)
+		}
+		commit_once = true
+	}
+
+	br()
+	output("Input the title of PR")
+	verbose("(leave empty to autofill from git commits)")
+	title := input("\n")
+	var autofill = false
+	if title == "" {
+		autofill = true
+	}
+	br()
+	output("Add a description << END")
+	desc := input(desc_delim)
+
+	br()
+	output("Skip check on browser?")
+	verbose("input starting with [y] for Yes, anything else for No")
+	var skip_browser_check = false
+	if strings.HasPrefix(input("\n"), "y") {
+		skip_browser_check = true
+	}
+
+	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", title, "--body", desc}
+	if autofill {
+		args = append(args, "--fill")
+	}
+	if !skip_browser_check {
+		args = append(args, "--web")
+	}
+
+	// execute stuff
+	Run("git", "switch", "-c", branch)
+	if commit_once {
+		Run("git", "add", "-a")
+		Run("git", "commit", "-m", cmessage)
+	}
+	Run("git", "push", "--set-upstream", "origin", branch)
+	Run("gh", args...)
+	Run("git", "switch", "-c", base_branch)
+}
+
+func verbose(s string) {
+	if explain_verbose {
+		fmt.Println(s)
+	}
+}
+
+func todo(a ...any) {
+	fmt.Print("TODO: use ")
+	fmt.Print(a...)
+}
+
+func output(a ...any) {
+	fmt.Println(a...)
+}
+func br() {
+	fmt.Println()
+}
+func Run(command string, args ...string) error {
+	if dry_run {
+		fmt.Println("executing", command, strings.Join(args, " "))
+		return nil
+	}
+	err := exec.Command(command, args...).Run()
+	return err
+}
+
+// Check() also runs on dry_run. do NOT put commands that mutate the environment.
+func Check(command string, args ...string) (string, error) {
+	b, err := exec.Command(command, args...).Output()
+	return string(b), err
+}
+
+// prints prefix, and waits for the user to input.
+// end_sig must end with \n or it will not work.
+// - reason: it uses bufio.ReadLine() internally
+// if user input \n on the first input, stops reading.
+func input(delim string) string {
+	r := bufio.NewReader(os.Stdin)
+	total := ""
+	is_first := true
+	for {
+		fmt.Print("> ")
+		line, err := r.ReadString(byte('\n'))
+		assertNil(err)
+		if strings.Trim(line, " \n") == "q" {
+			output("Detected 'q'. Exitting..")
+			os.Exit(1)
+		}
+		total += line
+		if strings.HasSuffix(total, delim) {
+			break
+		}
+		if is_first && total == "\n" {
+			return ""
+		}
+		is_first = false
+	}
+	return strings.TrimSuffix(total, delim)
+}
+func debug(a ...any) {
+	if debug_mode {
+		fmt.Println(a...)
+	}
+}
+func assertNil(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func formatStatus(b []byte) string {
+	return strings.Trim(string(b), "\n")
+}
+func oneLine(s string) string {
+	return strings.ReplaceAll(s, "\n", " ")
+}
+func removeFloatingM(s string) string {
+	return strings.ReplaceAll(s, " M ", " ")
+}
+func If[T any](b bool, onTrue, onFalse T) T {
+	if b {
+		return onTrue
+	} else {
+		return onFalse
+	}
+}
