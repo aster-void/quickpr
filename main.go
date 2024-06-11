@@ -48,6 +48,7 @@ func main() {
 	output("Input the title of PR")
 	verbose("(leave empty to autofill from git commits)")
 	title := input("\n")
+	title = strings.ReplaceAll(title, "\"", "\\\"")
 	var autofill = false
 	if title == "" {
 		autofill = true
@@ -55,6 +56,7 @@ func main() {
 	br()
 	output("Add a description << END")
 	desc := input(desc_delim)
+	desc = strings.ReplaceAll(desc, "\"", "\\\"")
 
 	br()
 	output("Skip check on browser?")
@@ -108,6 +110,19 @@ func Run(command string, args ...string) {
 		return
 	}
 	err := exec.Command(command, args...).Run()
+	if err != nil {
+		// apparentally some gh commands fail on success
+		debug("Command", command, strings.Join(args, " "), "Failed.")
+		debug(err)
+	}
+}
+
+func RunWithoutEscaping(command string, args ...string) {
+	if dry_run {
+		fmt.Println("executing", command, strings.Join(args, " "))
+		return
+	}
+	err := exec.Command("sh", "-c", command+strings.Join(args, " ")).Run()
 	if err != nil {
 		// apparentally some gh commands fail on success
 		debug("Command", command, strings.Join(args, " "), "Failed.")
