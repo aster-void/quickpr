@@ -104,8 +104,10 @@ func Run(command string, args ...string) {
 		fmt.Println("executing", command, strings.Join(args, " "))
 		return
 	}
-	err := exec.Command(command, args...).Run()
+	b, err := exec.Command(command, args...).Output()
 	if err != nil {
+		fmt.Println("Command", command, "Failed.")
+		fmt.Println(string(b))
 		log.Fatal(err)
 	}
 }
