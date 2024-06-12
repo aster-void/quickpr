@@ -18,8 +18,8 @@ gh auth login
 ### Set up this binary
 
 ```sh
-mkdir -p $(go env GOPATH)/pkg/src
-cd $(go env GOPATH)/pkg/src
+mkdir -p $(go env GOPATH)/src
+cd $(go env GOPATH)/src
 git clone git@github.com:aster-void/quickpr.git
 cd quickpr
 go build . -o ../bin/quickpr
@@ -28,12 +28,12 @@ go build . -o ../bin/quickpr
 and add this to ~/.{bash,zsh}rc
 
 ```sh
-export PATH=$PATH:/$(go env GOPATH)/pkg/bin
+export PATH=$PATH:/$(go env GOPATH)/bin
 ```
 
 ### Run
 
-1. find a random repo (better be a personal one) to pr
+1. find a random repo (better be a personal one, because it's not stable yet) to pr
 2. run `quickpr`
 3. follow the guide
 4. now you have a PR on the remote repo
