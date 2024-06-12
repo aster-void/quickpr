@@ -17,6 +17,10 @@ var dry_run = false
 var base_branch = "main"
 
 func main() {
+	if len(os.Args) == 2 {
+		base_branch = os.Args[1]
+	}
+
 	var switch_branch = false
 	var branch string
 	current_branch := Check("git", "branch", "--show-current")
