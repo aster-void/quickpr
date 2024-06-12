@@ -37,3 +37,13 @@ export PATH=$PATH:/$(go env GOPATH)/bin
 2. run `quickpr`
 3. follow the guide
 4. now you have a PR on the remote repo
+
+### Different base branch
+
+you can also make a PR to a different branch than main.
+
+```sh
+quickpr master
+```
+
+should make a PR to branch `master` (unchecked)
