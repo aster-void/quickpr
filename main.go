@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+var input_prefix = "> "
 var explain_verbose = true
 var debug_mode = true
 var desc_delim = "END\n"
@@ -140,7 +141,7 @@ func Check(command string, args ...string) string {
 	return strings.Trim(string(b), "\n")
 }
 
-// prints prefix, and waits for the user to input.
+// prints input_prefix, and waits for the user to input.
 // end_sig must end with \n or it will not work.
 // - reason: it uses bufio.ReadLine() internally
 // if user input \n on the first input, stops reading.
@@ -149,7 +150,7 @@ func input(delim string) string {
 	total := ""
 	is_first := true
 	for {
-		fmt.Print("> ")
+		fmt.Print(input_prefix)
 		line, err := r.ReadString(byte('\n'))
 		assertNil(err)
 		if strings.Trim(line, " \n") == "q" {
