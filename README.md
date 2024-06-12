@@ -22,7 +22,7 @@ mkdir -p $(go env GOPATH)/src
 cd $(go env GOPATH)/src
 git clone git@github.com:aster-void/quickpr.git
 cd quickpr
-go build . -o $(go env GOPATH)/bin/quickpr
+go build -o $(go env GOPATH)/bin/quickpr .
 ```
 
 and add this to ~/.{bash,zsh}rc
