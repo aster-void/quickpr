@@ -37,7 +37,7 @@ func main() {
 		output("Modified files:")
 		output(status)
 		br()
-		output("input commit message")
+		output("Commit message")
 		cmessage = input("\n")
 		if cmessage == "" {
 			log.Fatal("Empty commit message not allowed")
@@ -56,22 +56,23 @@ func main() {
 	}
 	br()
 	output("Add a description << END")
+	verbose("(input END to finish)")
 	desc := input(desc_delim)
 	desc = strings.ReplaceAll(desc, "\"", "\\\"")
 
 	br()
-	output("Skip check on browser?")
+	output("Check on browser?")
 	verbose("input starting with [y] for Yes, anything else for No")
-	var skip_browser_check = false
+	var do_browser_check = false
 	if strings.HasPrefix(input("\n"), "y") {
-		skip_browser_check = true
+		do_browser_check = true
 	}
 
 	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", title, "--body", desc}
 	if autofill {
 		args = append(args, "--fill")
 	}
-	if !skip_browser_check {
+	if !do_browser_check {
 		args = append(args, "--web")
 	}
 
