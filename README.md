@@ -38,6 +38,10 @@ export PATH=$PATH:/$(go env GOPATH)/bin
 3. follow the guide
 4. now you have a PR on the remote repo
 
+### Stop
+
+Enter `q` or ctrl+C to stop it. It will not change Git state until the last step is done.
+
 ### Different base branch
 
 you can also make a PR to a different branch than main.
@@ -47,3 +51,5 @@ quickpr master
 ```
 
 should make a PR to branch `master` (unchecked)
+
+
