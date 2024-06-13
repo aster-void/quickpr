@@ -76,7 +76,7 @@ func main() {
 	if autofill {
 		args = append(args, "--fill")
 	}
-	if !do_browser_check {
+	if do_browser_check {
 		args = append(args, "--web")
 	}
 
