@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 cd $(dirname -- $0)
 
-go build -o $(go env GOPATH)/bin/quickpr .
+go build -o $(go env GOPATH)/bin/quickpr -ldflags="-s -w" -trimpath .
