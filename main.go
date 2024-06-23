@@ -107,11 +107,6 @@ func verbose(s string) {
 	}
 }
 
-func todo(a ...any) {
-	fmt.Print("TODO: use ")
-	fmt.Print(a...)
-}
-
 func output(a ...any) {
 	fmt.Println(a...)
 }
@@ -196,12 +191,6 @@ func assertNil(err error) {
 
 func formatStatus(s string) string {
 	return strings.Trim(s, "\n")
-}
-func oneLine(s string) string {
-	return strings.ReplaceAll(s, "\n", " ")
-}
-func removeFloatingM(s string) string {
-	return strings.ReplaceAll(s, " M ", " ")
 }
 func If[T any](b bool, onTrue, onFalse T) T {
 	if b {
