@@ -30,6 +30,8 @@ func main() {
 		branch = input("\n")
 		branch = strings.ReplaceAll(strings.Trim(branch, " "), " ", "-")
 		switch_branch = true
+	} else {
+		branch = current_branch
 	}
 
 	bs := Check("git", "status", "-s")
@@ -72,10 +74,7 @@ func main() {
 		do_browser_check = true
 	}
 
-	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", title}
-	if desc != "" {
-		args = append(args, "--body", desc)
-	}
+	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", title, "--body", desc}
 	if autofill {
 		args = append(args, "--fill")
 	}
