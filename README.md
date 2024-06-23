@@ -2,7 +2,9 @@
 
 Quickly make a PR from CLI!
 
-state: unstable (alpha)
+state: alpha
+
+issues: Welcome
 
 ## Dependencies
 - gh
