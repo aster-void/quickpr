@@ -72,7 +72,10 @@ func main() {
 		do_browser_check = true
 	}
 
-	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", title, "--body", desc}
+	args := []string{"pr", "create", "--base", base_branch, "--head", branch, "--title", title}
+	if desc != "" {
+		args = append(args, "--body", desc)
+	}
 	if autofill {
 		args = append(args, "--fill")
 	}
@@ -82,15 +85,21 @@ func main() {
 
 	// execute stuff
 	if switch_branch {
-		Run("git", "switch", "-c", branch)
+		err := Run("git", "switch", "-c", branch)
+		abortIf(err)
 	}
 	if commit_once {
-		Run("git", "add", "-A")
-		Run("git", "commit", "-m", cmessage)
+		err := Run("git", "add", "-A")
+		abortIf(err)
+		err = Run("git", "commit", "-m", cmessage)
+		abortIf(err)
 	}
-	Run("git", "push", "--set-upstream", "origin", "HEAD")
-	Run("gh", args...)
-	Run("git", "switch", base_branch)
+	err := Run("git", "push", "--set-upstream", "origin", "HEAD")
+	abortIf(err)
+	err = Run("gh", args...)
+	abortIf(err)
+	err = Run("git", "switch", base_branch)
+	abortIf(err)
 }
 
 func verbose(s string) {
@@ -110,18 +119,20 @@ func output(a ...any) {
 func br() {
 	fmt.Println()
 }
-func Run(command string, args ...string) {
+
+func Run(command string, args ...string) error {
 	if dry_run {
 		fmt.Println("executing", command, strings.Join(args, " "))
-		return
+		return nil
 	}
 	b, err := exec.Command(command, args...).Output()
 	if err != nil {
-		// apparentally some gh commands fail on success
 		debug("Command", command, strings.Join(args, " "), "Failed.")
 		debug(string(b))
 		debug(err)
+		return err
 	}
+	return nil
 }
 
 func RunWithoutEscaping(command string, args ...string) {
@@ -198,5 +209,10 @@ func If[T any](b bool, onTrue, onFalse T) T {
 		return onTrue
 	} else {
 		return onFalse
+	}
+}
+func abortIf(err error) {
+	if err != nil {
+		log.Fatal(err)
 	}
 }
